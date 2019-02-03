@@ -1,0 +1,49 @@
+version: '3.7'
+services:
+  db:
+    image: postgres
+    restart: always
+    hostname: db
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dev
+    volumes:
+      - ./.postgres/init:/docker-entrypoint-initdb.d
+    ports:
+      - '5432:5432'
+    networks:
+      - develop
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    ports:
+      - '9000:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - ./.postgres/admin:/var/lib/pgadmin
+    networks:
+      - develop
+    depends_on:
+      - db
+  node:
+    build: node/
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./node/src:/usr/app/src
+    working_dir: /usr/app
+    environment:
+      PGUSER: dev
+      PGPASSWORD: password
+      PGDATABASE: dev
+      PGHOST: db
+    networks:
+      - develop
+    command: ['pm2-runtime', 'start', 'ecosystem.config.js']
+    depends_on:
+      - db
+networks:
+  develop:
