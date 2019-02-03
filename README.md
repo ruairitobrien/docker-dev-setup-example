@@ -14,6 +14,8 @@ Follow the official [installation guide](https://docs.docker.com/install/). The 
 
 ## Running
 
+> Warning! Once you kick off docker-compose, 3 fairly big docker images will be downloaded. Be prepared to download at least 500 MB (that's a guess, I should really go look at what size the images are)
+
 From the root of this project run:
 
 `docker-compose up --build`
